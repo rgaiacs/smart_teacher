@@ -1,0 +1,33 @@
+{% load smartqands_extras %}
+{% if smartqands %}
+    <script type='text/javascript' src='http://aleph.sagemath.org/static/jquery.min.js'></script>
+    <script>
+        $(function(){
+            sagecell.makeSagecell({inputLocation:  '#mycell',
+                codeLocation:   '#code',
+                autoeval:true,
+                hide:['editor', 'editorToggle', 'evalButton', 'sageMode', 'computationID', 'messages', 'sessionTitle', 'done', 'sessionFilesTitle', 'sessionFiles', 'files']});
+        });
+    </script>
+    <script type='text/x-sage' id='code'>
+@interact
+def q({{ smartqands.arg|safe }}):
+    {{ smartqands.question|lspace|safe }}
+    {{ smartqands.solution|lspace|safe }}
+    </script>
+    <div id='mycell'></div>
+   {% if id_sheet %}
+         <script type='text/javascript'>
+            function add_to_sheet(){
+                var x = document.getElementsByClassName('sagecell_stdout')[0].innerHTML;
+                x = x.split('Solution')
+                update_content("smartqands/add_to={{ id_sheet }}/{{ smartqands.id }}/upload?q=" + x[0] + "&s=" + x[1]);
+            }
+        </script>
+        <button type='button' onclick="add_to_sheet()">Add</button>
+    {% else %}
+        <button type='button' onclick="update_content('smartqands/{{ smartqands.id }}/edit')">Edit</button>
+    {% endif %}
+{% else %}
+    <h1>Error.</h1>
+{% endif %}

@@ -1,0 +1,37 @@
+<html>
+  <head>
+    <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+    <meta name="viewport" content="width=device-width">
+    <script type="text/javascript" src="http://aleph.sagemath.org/static/jquery.min.js"></script>
+    <script type="text/javascript" src="http://aleph.sagemath.org/embedded_sagecell.js"></script>
+{% autoescape off %}
+{% if q %}
+    <script type="text/x-sage" id="code">
+@interact
+def q177({{q.arg}}):
+    {{q.question}}
+    {{q.anwser}}
+    </script>
+{% endif %}
+{% endautoescape %}
+    <script>
+$(function () {
+    sagecell.makeSagecell({inputLocation:'#mycell',
+                           codeLocation:'#code',
+                           autoeval:true,
+                           hide:["editor", "editorToggle", "evalButton", "sageMode", "computationID", "messages", "sessionTitle", "done", "sessionFilesTitle", "sessionFiles", "files"]});
+});
+    </script>
+    <script type="text/javascript">
+        function pop_latex(){
+            var x = document.getElementsByClassName("sagecell_stdout");
+            alert(x[0].innerHTML);
+        }
+    </script>
+  </head>
+  <body>
+  <h1>Questões dinâmicas</h1>
+    <div id="mycell"></div><br \>
+    <input type="button" value="LaTeX" onclick="pop_latex()" />
+  </body>
+</html>

@@ -1,0 +1,34 @@
+{% if id_sheet %}
+    <div>Edit Sheet</div>
+{% else %}
+    <div>Create a new Sheet</div>
+{% endif %}
+{% if form %}
+    {% if id_sheet %}
+        <form>
+    {% else %}
+        <form>
+    {% endif %}
+        {% for f in form %}
+            <div class="fieldWrapper">
+                {{ f.erros }}
+                {{ f.label_tag }}: {{ f }}
+            </div>
+        {% endfor %}
+        {% if id_sheet %}
+            <input type="submit" value="Update" />
+        {% else %}
+            <input type="submit" value="Create" />
+        {% endif %}
+    </form>
+    <script type='text/javascript'>
+        $('form').submit(function(){
+            {% if id_sheet %}
+                update_content('sheet/{{ id_sheet }}/edit?' + $('form').serialize());
+            {% else %}
+                update_content('sheet/new?' + $('form').serialize());
+            {% endif %}
+            return false;
+        });
+    </script>
+{% endif %}

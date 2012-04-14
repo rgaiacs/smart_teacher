@@ -1,0 +1,87 @@
+TODO:
+
+Correct Bugs:
+
+------------------------------------------------------------------------------
+
+Until alpha 0.1.0:
+    This versions keeps the most basic kernel of smart_teacher. All responses
+    of the server are plain text.
+
+------------------------------------------------------------------------------
+
+Until alpha 0.2.0:
+    This versions introduce of some javascript codes to make the interface
+    more friendly.
+
+    [ ] Create new user.
+    [ ] OpenID login.
+    [ ] Export to tex (latex).
+
+------------------------------------------------------------------------------
+
+Until alpha 0.3.0:
+    This versions introduce some usefulls functions.
+
+    [ ] Enable version control of SmartQAndS.
+    [ ] Keyword model.
+    [ ] Bookmark of SmartQAndS.
+    [ ] List of SmartQAndS used at least once.
+    [ ] Export to html (with png).
+    [ ] Export to html (without png).
+
+------------------------------------------------------------------------------
+
+Until alpha 0.5.0:
+    This versions introduce the CSS template.
+
+------------------------------------------------------------------------------
+
+==============================================================================
+
+DONE:
+
+Correct Bugs:
+
+------------------------------------------------------------------------------
+
+Until alpha 0.1.0:
+    This versions keeps the most basic kernel of smart_teacher. All responses
+    of the server are plain text.
+
+    [x] Login.
+    [x] Logout.
+    [x] SmartQAndS model.
+    [x] List SmartQAndS.
+    [x] Create a SmartQAndS.
+    [x] Edit a SmartQAndS.
+    [x] QAndS model.
+    [x] Create a QAndS form SmartQAndS.
+    [x] Edit a QAndS.
+    [x] Delete a QAndS.
+    [x] Sheet model.
+    [x] List Sheets.
+    [x] Create a Sheet.
+    [x] Delete a Sheet.
+    [x] Edit a Sheet.
+    [x] List QAndS in a Sheet.
+    [x] Export to pdf (from tex).
+
+------------------------------------------------------------------------------
+
+Until alpha 0.2.0:
+    This versions introduce of some javascript codes to make the interface
+    more friendly.
+
+------------------------------------------------------------------------------
+
+Until alpha 0.3.0:
+    This versions introduce some usefulls functions.
+
+------------------------------------------------------------------------------
+
+Until alpha 0.5.0:
+    This versions introduce the CSS template.
+
+------------------------------------------------------------------------------
+

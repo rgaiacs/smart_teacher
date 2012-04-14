@@ -1,0 +1,34 @@
+{% if id %}
+    <div>Edit a SmartQAndS</div>
+{% else %}
+    <div>Create a SmartQAndS</div>
+{% endif %}
+{% if form %}
+    {% if id %}
+        <form>
+    {% else %}
+        <form>
+    {% endif %}
+    {% for f in form %}
+        <div class='fieldWrapper'>
+            {{ f.erros }}
+            {{ f.label_tag }}: {{ f }}
+        </div>
+    {% endfor %}
+    {% if id %}
+        <input type='submit' value='Update' />
+    {% else %}
+        <input type='submit' value='Create' />
+    {% endif %}
+</form>
+<script type='text/javascript'>
+    $('form').submit(function(){
+        {% if id %}
+            update_content('smartqands/{{ id }}/edit?' + $('form').serialize());
+        {% else %}
+            update_content('smartqands/new?' + $('form').serialize());
+        {% endif %}
+        return false;
+    });
+</script>
+{% endif %}

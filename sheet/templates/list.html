@@ -1,0 +1,19 @@
+{% if sheets %}
+    <table>
+        <tr>
+            <th>Title</th>
+            <th>Description</th>
+            <th></th>
+        </tr>
+        {% for s in sheets %}
+            <tr>
+                <td onclick="update_content('sheet/{{ s.id }}')" style='color:blue; text-decoration:underline; cursor:pointer;'>{{ s.title }}</td>
+                <td>{{ s.des }}</td>
+                <td>
+                    <button type='button' onclick='update_content("sheet/{{ s.id }}/edit")'>Edit</button>
+                    <button type='button' onclick='update_content("sheet/{{ s.id }}/del")'>Delete</button>
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+{% endif %}

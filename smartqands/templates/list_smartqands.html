@@ -1,0 +1,17 @@
+<table>
+    {% if smartqandss %}
+        <tr>
+            <th>Description</th>
+            <th></th>
+        {% for s in smartqandss %}
+            <tr>
+                {% if id_sheet %}
+                    <td onclick="update_content('smartqands/add_to={{ id_sheet }}/{{ s.id }}/')" style='color:blue; text-decoration:underline; cursor:pointer;'>{{ s.des }}</td>
+                {% else %}
+                    <td onclick="update_content('smartqands/{{ s.id }}')" style='color:blue; text-decoration:underline; cursor:pointer;'>{{ s.des }}</td>
+                    <td><button type='button' onclick='update_content("smartqands/{{ s.id }}/edit")'>Edit</td></button>
+                {% endif %}
+            </tr>
+        {% endfor %}
+    {% endif %}
+</table>
