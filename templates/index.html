@@ -1,21 +1,81 @@
-<html>
+</html>
     <head>
+        <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}style.css" />
+        <script type='text/javascript' src='http://aleph.sagemath.org/static/jquery.min.js'></script>
+        <script type='text/javascript' src='http://aleph.sagemath.org/embedded_sagecell.js'></script>
+        <script type='text/javascript'>
+            function update_content(go_to_url, content){
+                content = typeof content !== 'undefined' ? content : '#content';
+                history.pushState("object or string", "Title", go_to_url);
+                first_back = 1;
+                jQuery.ajax({
+                    url: go_to_url,
+                    dataType: 'html',
+                    beforeSend: function(){
+                        jQuery('#loader').show();
+                    },
+                    complete: function(){
+                        jQuery('#loader').hide();
+                    },
+                    success: function(data){
+                        jQuery(content).html(data);
+                    },
+                    error: function(){
+                        //alert(go_to_url);
+                    }
+                });
+            }
+        </script>
     </head>
     <body>
-        {% if error %}
-            {{ error }}
-        {% endif %}
-        {% if form %}
-        <form action="." method="POST">{% csrf_token %}
-            {% for f in form %}
-                <div class="fieldWrapper">
-                    {{ f.erros }}
-                    {{ f.label_tag }}: {{ f }}
-                </div>
-            {% endfor %}
-            <input type="submit" value="Login" />
-        </form>
-        For test use: User = guest and Password = guest.
-        {% endif %}
+        <div id='left_bar' style='margin:0px 10px; float:left; width:120px;'>
+            <img src="{{ STATIC_URL }}logo.png" width='100%' /> <br />
+            <button type='button' onclick="update_content('/sheet/new')" style='width:100%;'>Create Sheet</button><br />
+            <button type='button' onclick="update_content('/smartqands/new')" style='width:100%;'>Create Question</button>
+            <ul style='list-style-type:none; padding:0; margin-left:0;'>
+                <li class='left_bar' onclick="update_content('/')" onmouseover="this.setAttribute('class', 'left_bar_over');" onmouseout="this.setAttribute('class', 'left_bar');">Main page</li>
+                {% if sm_user %}
+                    <li class='left_bar' onclick="update_content('/sheet/res')" onmouseover="this.setAttribute('class', 'left_bar_over');" onmouseout="this.setAttribute('class', 'left_bar');">My sheet</li>
+                {% else %}
+                    <li>My sheet</li>
+                {% endif %}
+                <li class='left_bar' onclick="update_content('/sheet/pub')" onmouseover="this.setAttribute('class', 'left_bar_over');" onmouseout="this.setAttribute('class', 'left_bar');">Public sheet</li>
+                <li class='left_bar' onclick="update_content('/smartqands')" onmouseover="this.setAttribute('class', 'left_bar_over');" onmouseout="this.setAttribute('class', 'left_bar');">Questions</li>
+                <li>Contents</li>
+                <li>Randon</li>
+                <li class='left_bar' onclick="update_content('/events')" onmouseover="this.setAttribute('class', 'left_bar_over');" onmouseout="this.setAttribute('class', 'left_bar');">Events</li>
+                <li class='left_bar' onclick="update_content('/donate')" onmouseover="this.setAttribute('class', 'left_bar_over');" onmouseout="this.setAttribute('class', 'left_bar');">Donate</li>
+                <li>Interaction</li>
+                <ul style='list-style-type:none; text-indent:-2em;'>
+                    <li class='left_bar' onclick="update_content('/help')" onmouseover="this.setAttribute('class', 'left_bar_over');" onmouseout="this.setAttribute('class', 'left_bar');">Help</li>
+                    <li>About</li>
+                    <li>Recent changes</li>
+                    <li class='left_bar' onclick="update_content('/contact')" onmouseover="this.setAttribute('class', 'left_bar_over');" onmouseout="this.setAttribute('class', 'left_bar');">Contact</li>
+                </ul>
+                <li>Toolbox</li>
+                <li>Languages</li>
+            </ul>
+        </div>
+        <div id='main' style='margin:10px 10px 10px 130px;'>
+            <div id='loader' style='display:none; position:absolute; left:50%; z-index:2;'>Loading</div>
+            <div id='user' style='margin:10px; text-align:right;'>
+            {% if sm_user %}
+                You are login as {{ sm_user }}. <button type='button' onclick="window.location.href = '/logout'">Logout</button>
+            {% else %}
+                You are not login. <button type='button' onclick="window.location.href = '/login'">Login</button><button type='button' onclick="window.location.href = '/user_creation'">Create User</button>
+            {% endif %}
+            </div>
+            <div id='search' style='margin:10px; text-align:right;'>
+                <input type='text' autocomplete='on' readonly='readnly' value='Not Implement yet.'> <input type='button' value='Search'> <br />
+            </div>
+            <div id='content' style='margin:10px; border-style:solid; border-width:1px; text-align:left; padding: 10px;'>
+                {% if content %}
+                    {% include content %}
+                {% endif %}
+            </div>
+        </div>
+        <div id='footer' style='clear:both; text-align:center;'>
+            Text is available under the Creative Commons Attribution-ShareAlike License; additional terms may apply.
+        </div>
     </body>
 </html>

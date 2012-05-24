@@ -1,0 +1,22 @@
+<table>
+        <tr>
+            <th>Description</th>
+            <th></th>
+        </tr>
+    {% if list_smartqands %}
+        {% for s in list_smartqands %}
+            <tr>
+                {% if sheet_id %}
+                    <td onclick="update_content('/sheet/{{ sheet_id }}/add_question/{{ s.id }}/')" style='color:blue; text-decoration:underline; cursor:pointer;'>{{ s.description }}</td>
+                {% else %}
+                    <td onclick="update_content('/smartqands/{{ s.id }}')" style='color:blue; text-decoration:underline; cursor:pointer;'>{{ s.description }}</td>
+                    <td><button type='button' onclick='update_content("/smartqands/{{ s.id }}/edit0")'>Edit</button></td>
+                {% endif %}
+            </tr>
+        {% endfor %}
+    {% else %}
+        <tr>
+            <td>There is no question</td>
+        </tr>
+    {% endif %}
+</table>

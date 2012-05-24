@@ -1,32 +1,32 @@
-{% if id_sheet %}
+{% if sheet_id %}
     <div>Edit Sheet</div>
 {% else %}
     <div>Create a new Sheet</div>
 {% endif %}
 {% if form %}
-    {% if id_sheet %}
-        <form>
+    <form>
+    {% for f in form %}
+        <div class="fieldWrapper">
+            {{ f.erros }}
+            {{ f.label_tag }}: {{ f }}
+        </div>
+    {% endfor %}
+    {% if sheet_id %}
+        <input type="submit" value="Update" />
     {% else %}
-        <form>
+        <input type="submit" value="Create" />
     {% endif %}
-        {% for f in form %}
-            <div class="fieldWrapper">
-                {{ f.erros }}
-                {{ f.label_tag }}: {{ f }}
-            </div>
-        {% endfor %}
-        {% if id_sheet %}
-            <input type="submit" value="Update" />
-        {% else %}
-            <input type="submit" value="Create" />
-        {% endif %}
     </form>
     <script type='text/javascript'>
-        $('form').submit(function(){
-            {% if id_sheet %}
-                update_content('sheet/{{ id_sheet }}/edit?' + $('form').serialize());
+        jQuery('form').submit(function(){
+            {% if sheet_id %}
+                {% if show %}
+                    update_content('/sheet/{{ sheet_id }}/edit?' + jQuery('form').serialize() + '&show=1');
+                {% else %}
+                    update_content('/sheet/{{ sheet_id }}/edit?' + jQuery('form').serialize());
+                {% endif %}
             {% else %}
-                update_content('sheet/new?' + $('form').serialize());
+                update_content('/sheet/new?' + jQuery('form').serialize());
             {% endif %}
             return false;
         });

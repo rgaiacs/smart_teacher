@@ -1,0 +1,20 @@
+<html>
+    <head>
+    </head>
+    <body>
+        {% if error %}
+            {{ error }}
+        {% endif %}
+        {% if form %}
+        <form action="." method="POST">{% csrf_token %}
+            {% for f in form %}
+                <div class="fieldWrapper">
+                    {{ f.erros }}
+                    {{ f.label_tag }}: {{ f }}
+                </div>
+            {% endfor %}
+            <input type="submit" value="Create User" />
+        </form>
+        {% endif %}
+    </body>
+</html>

@@ -15,7 +15,7 @@ MANAGERS = ADMINS
 
 DATABASES = {
     'default': {
-        'ENGINE': 'sqlite3', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
+        'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
         'NAME': os.path.join(SITE_ROOT, 'data.db'),
         'USER': '',                      # Not used with sqlite3.
         'PASSWORD': '',                  # Not used with sqlite3.
@@ -91,6 +91,14 @@ TEMPLATE_DIRS = (
     os.path.join(SITE_ROOT, 'smartqands/templates'),
 )
 
+#STATIC_ROOT = os.path.join(SITE_ROOT, 'static')
+
+STATICFILES_DIRS = (
+    os.path.join(SITE_ROOT, 'static'),
+)
+
+STATIC_URL = '/static/'
+
 INSTALLED_APPS = (
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -101,7 +109,7 @@ INSTALLED_APPS = (
     # 'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
+    'django.contrib.staticfiles',
     'smart_teacher.smartqands',
-    'smart_teacher.qands',
     'smart_teacher.sheet',
 )

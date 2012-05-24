@@ -1,24 +1,28 @@
+<button type='button' onclick='update_content("/sheet/{{ sheet.id }}/add_question")'>Add question</button>
+{% if qands_count %}
+    <button type='button' onclick='window.location="/sheet/{{ sheet.id }}/pdf"'>PDF</button>
+    <button type='button' onclick='window.location="/sheet/{{ sheet.id }}/pdf?solution=1"'>PDF with anwsers</button>
+{% else %}
+    <button type='button' disabled="disabled" onclick='window.location="/sheet/{{ sheet.id }}/pdf"'>PDF</button>
+    <button type='button' disabled="disabled" onclick='window.location="/sheet/{{ sheet.id }}/pdf?solution=1"'>PDF with anwsers</button>
+{% endif %}
+<button type='button' onclick='update_content("/sheet/{{ sheet.id }}/edit?show=1")'>Edit</button>
+<button type='button' onclick='update_content=("/sheet/{{ sheet.id }}/del")'>Delete</button>
 {% if sheet %}
     <h1>{{ sheet.title }}</h1>
-    <p>{{ sheet.des }}</h1>
+    <p>{{ sheet.description }}</h1>
     <table>
         <tr>
             <th>Question</th>
             <th></th>
         </tr>
-        {% for q in qandss %}
+        {% for q in qands %}
             <tr>
                 <td onclick="update_content('sheet/{{ sheet.id }}/{{ q.id }}')" style='color:blue; text-decoration:underline; cursor:pointer;'>{{ q.question }}</td>
-                <td><button type='button' onclick='update_content("sheet/{{ sheet.id}}/del/{{ q.id }}")'>Remove</button></td>
+                <td><button type='button' onclick='update_content("/sheet/{{ sheet.id}}/del/{{ q.id }}")'>Remove</button></td>
             </tr>
         {% endfor %}
     </table>
-    <br />
-    <button type='button' onclick='update_content("smartqands/add_to={{ sheet.id }}")'>Add question</button>
-    <button type='button' onclick='window.location="sheet/{{ sheet.id }}/pdf"'>PDF</button>
-    <button type='button' onclick='window.location="sheet/{{ sheet.id }}/pdf?solution=1"'>PDF with anwsers</button>
-    <button type='button' onclick='update_content("sheet/{{ sheet.id }}/edit")'>Edit</button>
-    <button type='button' onclick='update_content=("sheet/{{ sheet.id }}/del")'>Delete</button>
 {% else %}
     <h1>Error</h1>
 {% endif %}

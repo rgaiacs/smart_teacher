@@ -1,0 +1,19 @@
+{% if id %}
+    <div>{{ id }}</div>
+    <table>
+        <tr>
+            <th>arg</th>
+            <th>question</th>
+            <th>solution</th>
+        </tr>
+        {% for r in revisions %}
+            <tr>    
+                <td>{{ r.script.arg }}</td>
+                <td>{{ r.script.question }}</td>
+                <td>{{ r.script.solution }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+{% else %}
+    <div>Error</div>
+{% endif %}

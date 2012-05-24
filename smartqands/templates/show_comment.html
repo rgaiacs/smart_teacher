@@ -1,0 +1,32 @@
+<table>
+    <tr>
+        <th>Comment</th>
+        <th>User and Date</th>
+    </tr>
+    {% if comment_list %}
+        {% for c in comment_list %}
+            <tr>
+                <td style='vertical-align:text-top;'>{{ c.comment }}</td>
+                <td style='vertical-align:text-top;'>{{ c.user.username }}<br />{{ c.date }}</td>
+            </tr>
+        {% endfor %}
+    {% endif %}
+</table>
+{% if form %}
+    <form>
+    {% for f in form %}
+        <div class='fieldWrapper'>
+            {{ f.erros }}
+            {{ f.label_tag }}: {{ f }}
+        </div>
+    {% endfor %}
+    <input type='submit' value='Post' />
+    </form>
+    <script type='text/javascript'>
+        $('form').submit(function(){
+            update_content('smartqands/{{ id }}/comment/edit?' + $('form').serialize(), '#smartqands_contente');
+            update_content('smartqands/{{ id }}/comment/', '#smartqands_content');
+            return false;
+        });
+    </script>
+{% endif %}

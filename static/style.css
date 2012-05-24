@@ -1,0 +1,9 @@
+.left_bar{
+    cursor:pointer;
+    color:blue;
+}
+.left_bar_over{
+    cursor:pointer;
+    color:blue;
+    text-decoration:underline;
+}

@@ -1,19 +1,25 @@
-{% if sheets %}
-    <table>
-        <tr>
-            <th>Title</th>
-            <th>Description</th>
-            <th></th>
-        </tr>
+<table>
+    <tr>
+        <th>Title</th>
+        <th>Description</th>
+        <th>Is Public</th>
+        <th></th>
+    </tr>
+    {% if sheets %}
         {% for s in sheets %}
             <tr>
-                <td onclick="update_content('sheet/{{ s.id }}')" style='color:blue; text-decoration:underline; cursor:pointer;'>{{ s.title }}</td>
-                <td>{{ s.des }}</td>
+                <td onclick="update_content('/sheet/{{ s.id }}')" style='color:blue; text-decoration:underline; cursor:pointer;'>{{ s.title }}</td>
+                <td>{{ s.description }}</td>
+                <td>{{ s.is_public }}</td>
                 <td>
-                    <button type='button' onclick='update_content("sheet/{{ s.id }}/edit")'>Edit</button>
-                    <button type='button' onclick='update_content("sheet/{{ s.id }}/del")'>Delete</button>
+                    <button type='button' onclick='update_content("/sheet/{{ s.id }}/edit?show=0")'>Edit</button>
+                    <button type='button' onclick='update_content("/sheet/{{ s.id }}/del")'>Delete</button>
                 </td>
             </tr>
         {% endfor %}
-    </table>
-{% endif %}
+    {% else %}
+        <tr>
+            <td>There is no sheet</td>
+        </tr>
+    {% endif %}
+</table>

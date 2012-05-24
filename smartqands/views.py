@@ -1,33 +1,46 @@
 # Create your views here.
 from django.shortcuts import render_to_response
 from django.http import HttpResponseRedirect
-from models import SmartQAndS
-from sheet.models import Sheet
-from qands.models import QAndS
+from django.template import RequestContext
+from django.contrib.auth.models import User
+from models import *
 from django import forms
 
 class SmartQAndSForm(forms.Form):
     id = forms.IntegerField(widget=forms.TextInput(attrs={'readonly':'readonly'}), required=False, label='ID')
-    des = forms.CharField(widget=forms.Textarea(), label='Description')
-    arg = forms.CharField(widget=forms.Textarea(), label='Parameters')
-    question = forms.CharField(widget=forms.Textarea(), label='Question')
-    solution = forms.CharField(widget=forms.Textarea(), label='Solution')
-    ref = forms.CharField(widget=forms.TextInput(), required=False, label='Reference')
+    description = forms.CharField(widget=forms.Textarea(), label='Description')
+    # redirect = forms.CharField(required=False, label='Redirect')
+    # arg = forms.CharField(widget=forms.Textarea(), label='Parameters')
+    # question = forms.CharField(widget=forms.Textarea(), label='Question')
+    # solution = forms.CharField(widget=forms.Textarea(), label='Solution')
+    interact = forms.CharField(widget=forms.Textarea(), label='Interact')
+    cat = forms.CharField(widget=forms.TextInput(), required=False, label='Reference')
     key = forms.CharField(widget=forms.TextInput(), required=False, label='Keyword')
 
 class KeywordForm(forms.Form):
     key = forms.CharField(label='Keyword')
-    up = forms.CharField(required=False, label='More general keyword')
 
-def list_smartqands(request, id_sheet=None):
+class CommentForm(forms.Form):
+    # id = forms.IntegerField(required=False, label='ID')
+    comment = forms.CharField(widget=forms.Textarea(), label='Comment')
+
+def list_smartqands(request):
     """
     Return a list of smartqands.
     """
     c = {}
-    c['id_sheet'] = id_sheet
     l = SmartQAndS.objects.all()
-    c['smartqandss'] = l
-    return render_to_response('list_smartqands.html', c)
+    c['list_smartqands'] = l
+    if request.is_ajax():
+        t = 'list_smartqands.html'
+    else:
+        t = 'index.html'
+        c['content'] = 'list_smartqands.html'
+        try:
+            c['sm_user'] = request.session['sm_user']
+        except:
+            pass
+    return render_to_response(t, c, context_instance=RequestContext(request))
 
 def list_keyword(request):
     """
@@ -35,92 +48,116 @@ def list_keyword(request):
     """
     return NotImplementedError
 
-def show_smartqands(request, id_smartqands=None, id_sheet=None):
+def show_smartqands(request, smartqands_id=None, smartqands_description=None):
     """
     Return a working smartqands.
     """
     c = {}
-    if id_smartqands:
-        c['smartqands'] = SmartQAndS.objects.get(id = id_smartqands)
-    if id_sheet:
-        c['id_sheet'] = id_sheet
-        print 'render add_to=' + str(id_sheet)
-    return render_to_response('show_smartqands.html', c)
+    if smartqands_id:
+        this_smartqands = SmartQAndS.objects.get(id=smartqands_id)
+        c['smartqands'] = this_smartqands
+    elif smartqands_description:
+        this_smartqands = SmartQAndS.objects.get(description=smartqands_description)
+        c['smartqands'] = this_smartqands
+    this_smartqands.counter += 1
+    this_smartqands.save()
+    #this_revision = Revision.objects.filter(smartqands=this_smartqands).latest('id')
+    c['script'] = this_smartqands.lastest.script
+    if request.is_ajax():
+        t = 'show_smartqands.html'
+    else:
+        t = 'index.html'
+        c['content'] = 'show_smartqands.html'
+        try:
+            c['sm_user'] = request.session['sm_user']
+        except:
+            pass
+    return render_to_response(t, c, context_instance=RequestContext(request))
 
-def edit_smartqands(request, id_smartqands=None):
+def edit_smartqands(request, smartqands_id=None, smartqands_description=None, show=0):
     """
-    If id_smartqands != None it edit the smartqands otherwise it create a new one.
+    If smartqands_id != None it edit the smartqands otherwise it create a new one.
     """
     c = {}
+    show = int(show)
+    c['show'] = show
     t = 'edit_smartqands.html'
-    if id_smartqands:
+    if smartqands_id or smartqands_description:
+        if smartqands_id:
+            this_smartqands = SmartQAndS.objects.get(id=smartqands_id)
+        elif smartqands_description:
+            this_smartqands = SmartQAndS.objects.get(description=smartqands_description)
+        c['id'] = this_smartqands.id
         if request.method == "GET":
-            form = SmartQAndSForm(request.GET)
-            if form.is_valid():
-                old = SmartQAndS.objects.get(id=id_smartqands)
-                old.des = form.cleaned_data['des']
-                old.arg = form.cleaned_data['arg']
-                old.question = form.cleaned_data['question']
-                old.solution = form.cleaned_data['solution']
-                old.save()
-                return HttpResponseRedirect('..')
+            if request.GET:
+                form = SmartQAndSForm(request.GET)
+                if form.is_valid():
+                    this_user = User.objects.get(username=request.user.username)
+                    # this_script = Script(arg=form.cleaned_data['arg'], question=form.cleaned_data['question'], solution=form.cleaned_data['solution'])
+                    this_script = Script(interact=form.cleaned_data['interact'])
+                    this_script.save()
+                    this_revision = Revision(script=this_script, smartqands=this_smartqands, user=this_user)
+                    this_revision.save()
+                    this_smartqands.lastest = this_revision
+                    this_smartqands.description = form.cleaned_data['description']
+                    this_smartqands.save()
+                    if show:
+                        return HttpResponseRedirect('../{0}/'.format(this_smartqands.id))
+                    else:
+                        return HttpResponseRedirect('..')
             else:
-                c['edit'] = True
-                old = SmartQAndS.objects.get(id=id_smartqands)
                 init = {}
-                init['des'] = old.des
-                init['arg'] = old.arg
-                init['question'] = old.question
-                init['solution'] = old.solution
+                init['id'] = this_smartqands.id
+                init['description'] = this_smartqands.description
+                # init['arg'] = this_smartqands.lastest.script.arg
+                # init['question'] = this_smartqands.lastest.script.question
+                # init['solution'] = this_smartqands.lastest.script.solution
+                c['interact'] = this_smartqands.lastest.script.interact
+                print this_smartqands.lastest.id
+                #print init['interact']
                 form = SmartQAndSForm(initial=init)
                 c['form'] = form
-                c['id'] = id_smartqands
     else:
         if request.method == "GET":
-            print 'try create'
-            form = SmartQAndSForm(request.GET)
-            if form.is_valid():
-                print 'valid'
-                new = SmartQAndS(des=form.cleaned_data['des'], arg=form.cleaned_data['arg'], question=form.cleaned_data['question'], solution=form.cleaned_data['solution'])
-                new.save()
-                return HttpResponseRedirect(str(new.id))
+            if request.GET:
+                form = SmartQAndSForm(request.GET)
+                print form.is_valid()
+                if form.is_valid():
+                    this_smartqands = SmartQAndS(description=form.cleaned_data['description'], counter=0, is_redirect=False)
+                    this_smartqands.save()
+                    this_user = User.objects.get(username=request.user.username)
+                    # this_script = Script(arg=form.cleaned_data['arg'], question=form.cleaned_data['question'], solution=form.cleaned_data['solution'])
+                    this_script = Script(interact=form.cleaned_data['interact'])
+                    this_script.save()
+                    this_revision = Revision(script=this_script, smartqands=this_smartqands, user=this_user)
+                    this_revision.save()
+                    this_smartqands.lastest = this_revision
+                    this_smartqands.save()
+                    return HttpResponseRedirect('/smartqands/{0}'.format(this_smartqands.id))
             else:
                 form = SmartQAndSForm()
                 c['form'] = form
     return render_to_response(t, c)
 
-def form_keyword(request, id_keyword):
+def history(request, smartqands_id=None, smartqands_description=None):
+    c = {}
+    t = 'history.html'
+    if smartqands_id or smartqands_description:
+        if smartqands_id:
+            this_smartqands = SmartQAndS.objects.get(id=smartqands_id)
+        elif smartqands_description:
+            this_smartqands = SmartQAndS.objects.get(description=smartqands_description)
+        c['id'] = this_smartqands.id
+        c['revisions'] = Revision.objects.filter(smartqands=this_smartqands)
+    return render_to_response(t, c)
+
+def form_keyword(request, keyword_title):
     """
     Return a form for create a new keyword or edit one.
     """
     return NotImplementedError
 
-def apply_smartqands(request, id_smartqands=None):
-    """
-    Try to save in the database a smartqands and return a result message.
-    """
-    c = {}
-    if request.method == 'GET':
-        form = SmartQAndSForm(request.GET)
-        if form.is_valid():
-            if form.cleaned_data['id'] in ('', None):
-                try:
-                    s_new = SmartQAndS(arg = form.cleaned_data['arg'], question = form.cleaned_data['question'], solution = form.cleaned_data['solution'])
-                    s_new.save()
-                except:
-                    c['error'] = True
-            else:
-                try:
-                    s_new = SmartQAndS.objects.get(id = form.cleaned_data['id'])
-                    s_new.arg = form.cleaned_data['arg']
-                    s_new.question = form.cleaned_data['question']
-                    s_new.solution = form.cleaned_data['solution']
-                    s_new.save()
-                except:
-                    c['error'] = True
-    return HttpResponseRedirect('../')
-
-def apply_keyword(request, id_keyword):
+def apply_keyword(request, keyword_title):
     """
     Try to save in the database a keyword and return a result message.
     """
@@ -138,14 +175,37 @@ def search_keyword(request):
     """
     return NotImplementedError
 
-def smartqands_to_qands(request, id_sheet=None, id_smartqands=None):
-    if id_sheet and id_smartqands:
+def show_comment(request, smartqands_id=None, smartqands_description=None):
+    t = 'show_comment.html'
+    c = {}
+    if smartqands_id:
+        this_smartqands = SmartQAndS.objects.get(id=smartqands_id)
+    elif smartqands_description:
+        this_smartqands = SmartQAndS.objects.get(description=smartqands_description)
+    c['id'] = this_smartqands.id
+    comment_list = Comment.objects.filter(smartqands=this_smartqands)
+    c['comment_list'] = comment_list
+
+    form = CommentForm()
+    c['form'] = form
+    return render_to_response(t, c)
+
+def edit_comment(request, smartqands_id=None, smartqands_description=None):
+    """
+    If comment.
+    """
+    print smartqands_id
+    if smartqands_id or smartqands_description:
+        if smartqands_id:
+            this_smartqands = SmartQAndS.objects.get(id=smartqands_id)
+        elif smartqands_description:
+            this_smartqands = SmartQAndS.objects.get(description=smartqands_description)
         if request.method == "GET":
-            if request.GET.get('q', None):
-                this_sheet = Sheet.objects.get(id=id_sheet)
-                this_smartqands = SmartQAndS.objects.get(id=id_smartqands)
-                q = QAndS(sheet=this_sheet, smartqands=this_smartqands, question=request.GET.get('q'), solution=request.GET.get('s',''))
-                q.save()
-    return HttpResponseRedirect('../../../sheet/' + str(id_sheet))
-
-
+            form = CommentForm(request.GET)
+            print form.is_valid()
+            if form.is_valid():
+                this_smartqnads = SmartQAndS.objects.get(id=smartqands_id)
+                this_user = User.objects.get(username=request.user.username)
+                this_comment = Comment(user=this_user, smartqands=this_smartqands, comment=form.cleaned_data['comment'])
+                this_comment.save()
+    return HttpResponseRedirect('../..')

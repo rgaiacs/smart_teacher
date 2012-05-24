@@ -1,0 +1,79 @@
+{% load smartqands_extras %}
+{% if smartqands %}
+    <div>
+        <div style='float:left;'>
+            <button type='button' onclick="update_content('/smartqands/{{ smartqands.id }}/')">Question</button>
+            <button type='button' onclick="update_content('/smartqands/{{ smartqands.id }}/comment/', '#smartqands_content')">Talk</button>
+        </div>
+        <div style='float:right;'>
+            <button type='button' onclick="update_content('/smartqands/{{ smartqands.id }}/')">Read</button>
+            <button type='button' onclick="update_content('/smartqands/{{ smartqands.id }}/edit1', '#smartqands_content')">Edit</button>
+            <button type='button' onclick="update_content('/smartqands/{{ smartqands.id }}/history', '#smartqands_content')">History</button>
+        </div>
+    </div>
+    <div id='smartqands_content'>
+        <script type='text/javascript' src='http://aleph.sagemath.org/static/jquery.min.js'></script>
+        <script>
+            $(function(){
+                sagecell.makeSagecell({inputLocation: '#mycell',
+                    codeLocation: '#code',
+                    autoeval: true,
+                    hide: ['editor', 'editorToggle', 'evalButton', 'permalinks', 'done', 'sessionFiles', 'sessionFilesTitle', 'files', 'computationID', 'messages', 'sessionTitle','sageMode']});
+            });
+        </script>
+        <script type='text/x-sage' id='code'>{{ script.interact|safe }}</script>
+        <div id='mycell' style='clear:right;'></div>
+    </div>
+    {% if sheet_id %}
+        <script type='text/javascript'>
+            function add_to_sheet(){
+                var q = '';
+                jQuery.each(jQuery('question').contents(), function(index, value){
+                    if(value.nodeType == 3){
+                        q += value.nodeValue;
+                    }
+                    else{
+                        if(value.nodeType == 1){
+                            if(value.tagName == 'SCRIPT'){
+                                if(value.type == 'math/tex'){
+                                    q += '$' + value.text + '$';
+                                }
+                                else if(value.type == 'math/tex; mode=display'){
+                                    q += '$$' + value.text + '$$';
+                                }
+                            }
+                        }
+                    }
+                });
+                /*alert(q);*/
+                s = '';
+                jQuery.each(jQuery('solution').contents(), function(index, value){
+                    if(value.nodeType == 3){
+                        s += value.nodeValue;
+                    }
+                    else{
+                        if(value.nodeType == 1){
+                            if(value.tagName == 'SCRIPT'){
+                                if(value.type == 'math/tex'){
+                                    s += '$' + value.text + '$';
+                                }
+                                else if(value.type == 'math/tex; mode=display'){
+                                    s += '$$' + value.text + '$$';
+                                }
+                            }
+                        }
+                    }
+                });
+                var params = {q:q, s:s};
+                update_content("/sheet/{{ sheet_id }}/add_question/{{ smartqands.id }}?" + jQuery.param(params));
+                /*
+                x = x.split('Solution')
+                update_content("smartqands/add_to={{ id_sheet }}/{{ smartqands.id }}/upload?q=" + x[0] + "&s=" + x[1]);
+                */
+            }
+        </script>
+        <button type='button' onclick="add_to_sheet()">Add</button>
+    {% endif %}
+{% else %}
+    <h1>Error.</h1>
+{% endif %}

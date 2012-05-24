@@ -1,34 +1,78 @@
+<script>
+    jQuery(function(){
+        sagecell.makeSagecell({inputLocation: '#interact',
+            outputLocation: '#preview',
+            editor: 'textarea',
+            codeLocation: '#code',
+            evalButtonText: 'Preview',
+            hide: ['editorToggle', 'permalinks', 'done', 'sessionFiles', 'sessionFilesTitle', 'files', 'computationID', 'messages', 'sessionTitle', 'sageMode']});
+    });
+</script>
+<script id='code' type='text/x-sage'>{{ interact|safe }}</script>
 {% if id %}
     <div>Edit a SmartQAndS</div>
 {% else %}
     <div>Create a SmartQAndS</div>
 {% endif %}
-{% if form %}
-    {% if id %}
-        <form>
-    {% else %}
-        <form>
-    {% endif %}
-    {% for f in form %}
-        <div class='fieldWrapper'>
-            {{ f.erros }}
-            {{ f.label_tag }}: {{ f }}
-        </div>
-    {% endfor %}
-    {% if id %}
-        <input type='submit' value='Update' />
-    {% else %}
-        <input type='submit' value='Create' />
-    {% endif %}
-</form>
+{% if form.id %}
+    <div class='fieldWrapper'>
+        {{ form.id.erros }}
+        {{ form.id.label_tag }}: {{ form.id }}
+    </div>
+{% endif %}
+{% if form.description %}
+    <div class='fieldWrapper'>
+        {{ form.description.erros }}
+        {{ form.description.label_tag }}: {{ form.description }}
+    </div>
+{% endif %}
+<div id="interact"></div>
+{% if form.cat %}
+    <div class='fieldWrapper'>
+        {{ form.cat.erros }}
+        {{ form.cat.label_tag }}: {{ form.cat }}
+    </div>
+{% endif %}
+{% if form.key %}
+    <div class='fieldWrapper'>
+        {{ form.key.erros }}
+        {{ form.key.label_tag }}: {{ form.key }}
+    </div>
+{% endif %}
+{% if id %}
+    <input type='button' onclick='submit();' value='Update' />
+{% else %}
+    <input type='button' onclick='submit();' value='Create' />
+{% endif %}
 <script type='text/javascript'>
-    $('form').submit(function(){
+    function submit(){
+        /*
+        var id = jQuery('#id_id');
+        var description = jQuery('#id_description');
+        var interact = jQuery('.sagecell_commands');
+        var cat = jQuery('#id_key');
+        var key = jQuery('#id_key');
+        var params = {
+            id:id,
+            description:description,
+            interact:interact,
+            cat:cat,
+            key:key
+            }
+        */
+        var params = {
+            id:jQuery('#id_id').val(),
+            description:jQuery('#id_description').val(),
+            interact:jQuery('.sagecell_commands').val(),
+            cat:jQuery('#id_key').val(),
+            key:jQuery('#id_key').val()
+        }
         {% if id %}
-            update_content('smartqands/{{ id }}/edit?' + $('form').serialize());
+            update_content('/smartqands/{{ id }}/edit{{ show }}?' + jQuery.param(params));
         {% else %}
-            update_content('smartqands/new?' + $('form').serialize());
+            update_content('/smartqands/new?' + jQuery.param(params));
         {% endif %}
         return false;
-    });
+    }
 </script>
-{% endif %}
+<div id="preview"></div>
